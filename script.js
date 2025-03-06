@@ -60,7 +60,7 @@ const stock = {
         return;
       } else if (itemQuantity < this.items[existItemIndex].quantity) {
         this.items[existItemIndex].quantity -= itemQuantity;
-        // updateProductInDom(this.items[existItemIndex]);
+        updateProductInDom(this.items[existItemIndex]);
       } else if (itemQuantity === this.items[existItemIndex].quantity) {
         this.items.splice(existItemIndex, 1);
         // deleteProductFromDom(this.items[existItemIndex].name);
@@ -198,31 +198,38 @@ function addProductToDom(item) {
   const li = document.createElement("li");
   li.id = `product-${item.name}`;
   li.classList.add('list-group-item')
-  // HW Реализовать функционал удаления продукта
+  // HW 18 Реализовать функционал удаления продукта
+  // HW Advanced (добавить кнопки plus и minus для изменения кол-ва товара)
   li.innerHTML = `
     <span>
       <strong>${item.name}</strong> - 
       <strong>${item.price}</strong> 
       <strong id="quantity-${item.name}">(${item.quantity} шт.)</strong>
     </span>
-    <button id="deleteBtn-${item.name}" class="btn btn-danger" onclick="stock.removeItem('${item.name}', ${item.quantity})">Delete</button>
+    <button class="btn btn-danger" onclick="stock.removeItem('${item.name}', ${1})">-</button>
+    <button id="plusBtn-${item.name}" class="btn btn-danger">+</button>
+    <button id="deleteBtn-${item.name}" class="btn btn-danger" >Delete</button>
   `;
+  // Второй способ решения действия, связанного с удалением элемента списка
 
+  // 1. При создании кнопки добавили id для получения ссылки
+  // <button id="deleteBtn-${item.name}" class="btn btn-danger">Delete</button> (Для данного способа вариант 208 строки)
 
   
   productsList.appendChild(li);
 
-  // Второй способ решения действия, связанного с удалением элемента списка
-
-  // 1. При создании кнопки добавили id для получения ссылки
-  // <button id="deleteBtn-${item.name}" class="btn btn-danger" onclick="stock.removeItem('${item.name}', ${item.quantity})">Delete</button>
   // 2. Получаем ссылку по id
-  // const deleteBtn = document.getElementById(`deleteBtn-${item.name}`);
+  const deleteBtn = document.getElementById(`deleteBtn-${item.name}`);
+  const plusBtn = document.getElementById(`plusBtn-${item.name}`);
   // 3. С помощью ссылки на элемент обрабатываем событие клика на элемент
-  // deleteBtn.onclick = () => {
-  //   stock.removeItem(item.name, item.quantity);
-  //   li.remove();
-  // }
+  deleteBtn.onclick = () => {
+    const actualQuantity = stock.items.find((e) => e.name === item.name).quantity;
+    stock.removeItem(item.name, actualQuantity);
+    li.remove();
+  }
+  plusBtn.onclick = () => {
+    stock.addItem({ ...item, quantity: 1 })
+  }
 }
 
 function deleteProductFromDom(itemName) {
